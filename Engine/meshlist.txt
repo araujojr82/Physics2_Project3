@@ -1,0 +1,7 @@
+ball       	assets/models/ball_xyz_n.ply
+floor_plane	assets/models/floor_plane.ply
+north_plane	assets/models/north_plane.ply
+south_plane	assets/models/south_plane.ply
+left_plane	assets/models/left_plane.ply
+right_plane	assets/models/right_plane.ply
+cloth           assets/models/plane_simple_uv.ply

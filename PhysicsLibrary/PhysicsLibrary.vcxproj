@@ -152,6 +152,7 @@
     <ClCompile Include="shapes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cCollisionBody.h" />
     <ClInclude Include="cIntegration.h" />
     <ClInclude Include="CollisionDetection.h" />
     <ClInclude Include="CollisionManifold.h" />

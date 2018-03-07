@@ -54,11 +54,17 @@ namespace nPhysics
 
 	public:
 
+		eObjectType myType;
+
 		cSoftBody(const sSoftBodyDesc& desc);
 		void GetAABB(glm::vec3& minBoundsOut, glm::vec3& maxBoundsOut);
 		// Get miminum height - radius
 		// Get maximum height + radius (DONT FORGET RADIUS)
 
+		virtual void GetNodePosition( size_t index, glm::vec3 nodePositionOut );
+		virtual size_t NumNodes();
+
+		virtual eObjectType getType();
 
 	protected:
 		std::vector<cNode*> mNodes;

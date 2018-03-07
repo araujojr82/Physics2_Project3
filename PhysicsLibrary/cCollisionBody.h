@@ -1,10 +1,10 @@
 #pragma once
 
-#include "eObjectType.h"
+#include "iCollisionBody.h"
 
 namespace nPhysics
 {
-	class iCollisionBody
+	class cCollisionBody
 	{
 	public:
 		//enum eObjectTypes
@@ -13,7 +13,7 @@ namespace nPhysics
 		//	SOFT_BODY = 1
 		//};
 
-		virtual ~iCollisionBody() {}
+		virtual ~cCollisionBody() {}
 
 		virtual eObjectType getType() = 0;
 	};

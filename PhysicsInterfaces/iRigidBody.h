@@ -8,7 +8,7 @@
 
 namespace nPhysics
 {
-	class iRigidBody : iCollisionBody
+	class iRigidBody : public iCollisionBody
 	{
 	public:
 		virtual ~iRigidBody() {}

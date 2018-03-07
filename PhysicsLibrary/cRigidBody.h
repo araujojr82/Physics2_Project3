@@ -11,6 +11,7 @@ namespace nPhysics
 	class cRigidBody : public iRigidBody
 	{
 	public:
+
 		cRigidBody(const sRigidBodyDesc& desc, iShape* shape);
 		virtual ~cRigidBody();
 
@@ -34,6 +35,8 @@ namespace nPhysics
 		virtual void ApplyImpulse( glm::vec3 impulse );
 		virtual void ApplyImpulseAtPoint( glm::vec3 impulse, glm::vec3 relativePoint );
 
+		eObjectType myType;
+		eObjectType getType();
 
 
 	private:

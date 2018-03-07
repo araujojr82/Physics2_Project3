@@ -132,12 +132,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="eObjectType.h" />
     <ClInclude Include="eShapeType.h" />
     <ClInclude Include="iCollisionBody.h" />
     <ClInclude Include="iPhysicsFactory.h" />
     <ClInclude Include="iPhysicsWorld.h" />
     <ClInclude Include="iRigidBody.h" />
     <ClInclude Include="iShape.h" />
+    <ClInclude Include="sBodyDesc.h" />
     <ClInclude Include="sRigidBodyDesc.h" />
     <ClInclude Include="sSoftBodyDesc.h" />
   </ItemGroup>

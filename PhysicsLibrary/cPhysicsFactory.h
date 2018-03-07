@@ -16,6 +16,8 @@ namespace nPhysics
 		virtual iPhysicsWorld* CreateWorld();
 
 		virtual iRigidBody* CreateRigidBody(const sRigidBodyDesc& desc, iShape* shape);
+		virtual iSoftBody* CreateSoftBody( const sSoftBodyDesc& desc );
+		virtual iCollisionBody* CreateBody( const sBodyDesc& desc, iCollisionBody::objectTypes type );
 
 		virtual iShape* CreateSphere(float radius);
 		virtual iShape* CreatePlane(const glm::vec3& normal, float planeConst);

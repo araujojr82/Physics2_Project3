@@ -48,6 +48,8 @@
 #include <iRigidBody.h>
 #include <iShape.h>
 #include <sRigidBodyDesc.h>
+#include <iSoftBody.h>
+#include <sSoftBodyDesc.h>
 
 HINSTANCE hGetProckDll;
 typedef nPhysics::iPhysicsFactory*( *f_CreateFactory )( );
@@ -93,6 +95,8 @@ cLightManager*		g_pLightManager;
 cBasicTextureManager*	g_pTextureManager = 0;
 
 cDebugRenderer*			g_pDebugRenderer = 0;
+
+cMesh g_theClothMesh;
 
 // This contains the AABB grid for the terrain...
 //cAABBBroadPhase* g_terrainAABBBroadPhase = 0;
@@ -421,18 +425,17 @@ int main( void )
 	// Gets the "current" time "tick" or "step"
 	double lastTimeStep = glfwGetTime();
 
-	// Testing if the mesh could be changed every frame
-	cMesh theClothMesh;
-	::g_pVAOManager->lookupMeshFromName("cloth", theClothMesh);
+	//// Testing if the mesh could be changed every frame
+	//::g_pVAOManager->lookupMeshFromName("cloth", ::g_theClothMesh );
 
 	// Main game or application loop
 	while( !glfwWindowShouldClose( window ) )
 	{
-		for (int v = 0; v != theClothMesh.numberOfVertices; v++ )
+		for (int v = 0; v != ::g_theClothMesh.numberOfVertices; v++ )
 		{
-			theClothMesh.pVertices[v].x *= 1.001f;
+			::g_theClothMesh.pVertices[v].x *= 1.001f;
 		}
-		::g_pVAOManager->loadMeshIntoVAO(theClothMesh, sexyShaderID, false);
+		::g_pVAOManager->loadMeshIntoVAO( ::g_theClothMesh, sexyShaderID, false);
 
 
 		float ratio;
@@ -728,14 +731,43 @@ void loadObjectsFile( std::string fileName )
 			pTempGO->rigidBody = newBody;
 			pTempGO->btRigidBody = newBulletBody;
 		}
-		else if (pTempGO->meshName == "cloth")
+		else if(pTempGO->meshName == "cloth")
 		{
+			// Save this mesh into a global variable
+			::g_pVAOManager->lookupMeshFromName( "cloth", ::g_theClothMesh );
+
+			// Create a RigidBody Description
+			nPhysics::sSoftBodyDesc theDesc;
+			//theDesc.StaticIndices
+			//theDesc.TriangulatedIndices
+			//theDesc.Vertices
+
+			for( int t = 0; t != ::g_theClothMesh.numberOfTriangles; t++ )
+			{
+				nPhysics::sTriangle* theTriangle = new nPhysics::sTriangle();
+				theTriangle->nodeID_0 = ::g_theClothMesh.pTriangles[t].vertex_ID_0;
+				theTriangle->nodeID_1 = ::g_theClothMesh.pTriangles[t].vertex_ID_1;
+				theTriangle->nodeID_2 = ::g_theClothMesh.pTriangles[t].vertex_ID_2;
+
+				theDesc.TriangulatedIndices.push_back( theTriangle );
+			}
+
+			for( int v = 0; v != ::g_theClothMesh.numberOfVertices; v++ )
+			{
+				theDesc.Vertices.push_back( glm::vec3( ::g_theClothMesh.pVertices[v].x,
+													   ::g_theClothMesh.pVertices[v].y,
+													   ::g_theClothMesh.pVertices[v].z ) );
+			}
+						
 			pTempGO->textureBlend[0] = 1.0f;
 			pTempGO->textureNames[0] = "square_texture.bmp";
 			pTempGO->isSoftBody = true;
 			pTempGO->position = glm::vec3(	allObjects[index].x,
 											allObjects[index].y,
 											allObjects[index].z );
+			
+			nPhysics::iSoftBody* newBody = ::g_pThePhysicsFactory->CreateSoftBody( theDesc );
+			::g_pThePhysicsWorld->AddSoftBody( newBody );
 		}
 		else
 		{

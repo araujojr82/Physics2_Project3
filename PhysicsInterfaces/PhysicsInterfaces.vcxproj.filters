@@ -39,6 +39,12 @@
     <ClInclude Include="iCollisionBody.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sBodyDesc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eObjectType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="iSoftBody.h">

@@ -1,9 +1,10 @@
 #pragma once
-//#include <glm\game_math.h>
+
+#include "sBodyDesc.h"
 
 namespace nPhysics
 {
-	struct sRigidBodyDesc
+	struct sRigidBodyDesc : public sBodyDesc
 	{
 		sRigidBodyDesc()
 			: Position( 0.f, 0.f, 0.f )

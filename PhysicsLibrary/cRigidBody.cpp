@@ -3,7 +3,8 @@
 namespace nPhysics
 {
 	cRigidBody::cRigidBody( const sRigidBodyDesc& desc, iShape* shape )
-		: mShape( shape )
+		: myType( RIGID_BODY )
+		, mShape( shape )
 		, mPosition( desc.Position )
 		, mPrevPosition( desc.PrevPosition )
 		, mVelocity( desc.Velocity )
@@ -105,6 +106,11 @@ namespace nPhysics
 	{
 		mVelocity += impulse * mInvMass;
 		mAngularVelocity += glm::cross( relativePoint, impulse * mInvMass );
+	}
+
+	eObjectType cRigidBody::getType()
+	{
+		return this->myType;
 	}
 
 }

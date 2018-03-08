@@ -13,13 +13,25 @@ namespace nPhysics
 
 		float radius = glm::distance( vertA, vertB ) / 2;
 
+		// I'll use the same sphereShape for every node
+		iShape* sphereShape = new cSphereShape( radius );
+
 		// Create one node for each vertice
 		for( int i = 0; i != desc.Vertices.size(); i++ )
 		{			
-			cNode* newNode = new cNode();
-			newNode->Position = desc.Vertices[i];
-			newNode->Mass = 0.1f;
-			newNode->Radius = radius;
+			sRigidBodyDesc theDesc;
+
+			theDesc.Position = desc.Vertices[i];
+			theDesc.Mass = 0.1f;
+
+			if( theDesc.Mass == 0.0f )
+				theDesc.invMass = theDesc.Mass;
+			else
+				theDesc.invMass = 1 / theDesc.Mass;
+
+			theDesc.PrevPosition = theDesc.Position;
+
+			cNode* newNode = new cNode( theDesc, sphereShape );
 			this->mNodes.push_back( newNode );
 		}
 
@@ -71,15 +83,23 @@ namespace nPhysics
 
 		for (int i = 0; i != this->mNodes.size(); i++)
 		{
+			iShape* theShape = this->mNodes[i]->GetShape();
+
+			glm::vec3 nodePosition = glm::vec3( 0.0f );
+			this->mNodes[i]->GetPosition( nodePosition );
+
+			float radius = 0.0f;
+			theShape->GetSphereRadius( radius );
+
 			if (i = 0)
 			{
-				minBoundsOut = this->mNodes[i]->Position - this->mNodes[i]->Radius;
-				maxBoundsOut = this->mNodes[i]->Position + this->mNodes[i]->Radius;
+				minBoundsOut = nodePosition - radius;
+				maxBoundsOut = nodePosition + radius;
 			}
 			else
-			{
-				minPos = this->mNodes[i]->Position - this->mNodes[i]->Radius;
-				maxPos = this->mNodes[i]->Position - this->mNodes[i]->Radius;
+			{			
+				minPos = nodePosition - radius;
+				maxPos = nodePosition + radius;
 
 				if( minPos.x < minBoundsOut.x )
 					minBoundsOut.x = minPos.x;
@@ -102,7 +122,7 @@ namespace nPhysics
 	void cSoftBody::GetNodePosition( size_t index, glm::vec3 nodePositionOut )
 	{
 		if( index < this->mNodes.size() )
-			nodePositionOut = this->mNodes[index]->Position;
+			this->mNodes[index]->GetPosition( nodePositionOut );
 
 		return;
 	}
@@ -117,12 +137,32 @@ namespace nPhysics
 		return this->myType;
 	}
 
+	std::vector<iRigidBody*> cSoftBody::getNodeListAsRigidBodies()
+	{
+		std::vector<iRigidBody*> theRigidBodies;
+
+		for( int i = 0; i != this->mNodes.size(); i++ )
+		{
+			iRigidBody* theBody = dynamic_cast< iRigidBody* > ( this->mNodes[i] );
+			theRigidBodies.push_back( theBody );
+		}
+
+		return theRigidBodies;
+	}
+
 	cSoftBody::cSpring::cSpring( cNode * nodeA, cNode * nodeB )
 	{
 		this->SpringConstantK = 0.3f;
 		this->NodeA = nodeA;
 		this->NodeB = nodeB;
-		this->CurrentSeparation = glm::distance( this->NodeA->Position, this->NodeB->Position );
+
+		glm::vec3 posA;
+		glm::vec3 posB;
+
+		this->NodeA->GetPosition( posA );
+		this->NodeB->GetPosition( posB );
+
+		this->CurrentSeparation = glm::distance( posA, posB );
 		this->RestingSeparation = this->CurrentSeparation;
 			
 		return;
@@ -138,17 +178,18 @@ namespace nPhysics
 		return nullptr;
 	}
 
-	cSoftBody::cNode::cNode()
-	{
-		this->IsStatic = false;
-		this->Mass = 0.0f;
-		this->Radius = 0.0f;
-		this->Position = glm::vec3( 0.0f );
-		this->Velocity = glm::vec3( 0.0f );
-		this->Acceleration = glm::vec3( 0.0f );
 
-		return;
-	}
+	//cSoftBody::cNode::cNode( const sRigidBodyDesc& desc, iShape* shape ) : cRigidBody( desc, shape )
+	//{
+	//	this->IsStatic = false;
+	//	this->Mass = 0.0f;
+	//	this->Radius = 0.0f;
+	//	this->Position = glm::vec3( 0.0f );
+	//	this->Velocity = glm::vec3( 0.0f );
+	//	this->Acceleration = glm::vec3( 0.0f );
+
+	//	return;
+	//}
 
 	bool cSoftBody::cNode::HasNeighbour(cNode * node)
 	{

@@ -6,6 +6,9 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp> // <- This includes vec3 and mat4
 
+#include "cRigidBody.h"
+#include "shapes.h"
+
 namespace nPhysics
 {
 
@@ -33,10 +36,19 @@ namespace nPhysics
 
 		};
 
-		class cNode
+		class cNode : public cRigidBody
 		{
 		public:
-			cNode();
+			// Call the superclass constructor in the subclass constructor
+			cNode( const sRigidBodyDesc& desc, iShape* shape ) : cRigidBody( desc, shape )
+			{
+				this->IsStatic = false;
+				//this->Mass = 0.0f;
+				//this->Radius = 0.0f;
+				//this->Position = glm::vec3( 0.0f );
+				//this->Velocity = glm::vec3( 0.0f );
+				//this->Acceleration = glm::vec3( 0.0f );
+			}
 
 			bool HasNeighbour(cNode * node);	// Check to see if already has a connection
 
@@ -45,11 +57,11 @@ namespace nPhysics
 			// std::vector<cNode*> Neighbors; The Springs knows the neighbors
 
 			bool IsStatic;
-			float Mass;
-			float Radius;
-			glm::vec3 Position;
-			glm::vec3 Velocity;
-			glm::vec3 Acceleration;
+			//float Mass;
+			//float Radius;
+			//glm::vec3 Position;
+			//glm::vec3 Velocity;
+			//glm::vec3 Acceleration;
 
 		};
 
@@ -66,6 +78,10 @@ namespace nPhysics
 		virtual size_t NumNodes();
 
 		virtual eObjectType getType();
+
+		void ApplyForce( glm::vec3 force );
+
+		std::vector<iRigidBody*> getNodeListAsRigidBodies();
 
 	protected:
 		std::vector<cNode*> mNodes;

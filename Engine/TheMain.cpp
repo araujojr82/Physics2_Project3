@@ -725,8 +725,9 @@ void loadObjectsFile( std::string fileName )
 			newBody = ::g_pThePhysicsFactory->CreateRigidBody( theDesc, ::g_pThePhysicsFactory->CreateSphere( radius ) );
 			newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, ::g_pThePhysicsFactory->CreateSphere( radius ) );
 
-			::g_pThePhysicsWorld->AddRigidBody(newBody);
-			::g_pBulletPhysicsWorld->AddRigidBody(newBulletBody);
+			//::g_pThePhysicsWorld->AddRigidBody(newBody);			
+			//::g_pBulletPhysicsWorld->AddRigidBody(newBulletBody);
+			::g_pThePhysicsWorld->AddBody( newBody );
 
 			pTempGO->rigidBody = newBody;
 			pTempGO->btRigidBody = newBulletBody;
@@ -767,7 +768,7 @@ void loadObjectsFile( std::string fileName )
 											allObjects[index].z );
 			
 			nPhysics::iSoftBody* newBody = ::g_pThePhysicsFactory->CreateSoftBody( theDesc );
-			::g_pThePhysicsWorld->AddSoftBody( newBody );
+			::g_pThePhysicsWorld->AddBody( newBody );
 		}
 		else
 		{
@@ -789,8 +790,10 @@ void loadObjectsFile( std::string fileName )
 			newBody = ::g_pThePhysicsFactory->CreateRigidBody( theDesc, g_pThePhysicsFactory->CreatePlane( planeNormal, planeConst ) );
 			newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, g_pThePhysicsFactory->CreatePlane( planeNormal, planeConst ) );
 
-			::g_pThePhysicsWorld->AddRigidBody(newBody);
-			::g_pBulletPhysicsWorld->AddRigidBody(newBulletBody);
+			//::g_pThePhysicsWorld->AddRigidBody(newBody);
+			//::g_pBulletPhysicsWorld->AddRigidBody(newBulletBody);
+			::g_pThePhysicsWorld->AddBody( newBody );
+
 
 			pTempGO->rigidBody = newBody;
 			pTempGO->btRigidBody = newBulletBody;

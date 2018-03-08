@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iCollisionBody.h>
 #include <iSoftBody.h>
 #include <sSoftBodyDesc.h>
 #define GLM_ENABLE_EXPERIMENTAL

@@ -4,7 +4,7 @@
 
 namespace nPhysics
 {
-	class cCollisionBody
+	class cCollisionBody : public iCollisionBody
 	{
 	public:
 		//enum eObjectTypes

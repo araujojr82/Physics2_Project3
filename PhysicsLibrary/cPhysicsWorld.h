@@ -2,7 +2,7 @@
 //#include <Physics\Interfaces\iPhysicsWorld.h>
 #include <iPhysicsWorld.h>
 #include <vector>
-#include "cCollisionBody.h"
+#include "iCollisionBody.h"
 #include "cRigidBody.h"
 #include "cSoftBody.h"
 #include "shapes.h"
@@ -23,8 +23,13 @@ namespace nPhysics
 
 		virtual void AddBody( iCollisionBody* collisionBody );
 		virtual void RemoveBody( iCollisionBody* collisionBody );
-		virtual bool Collide( cCollisionBody* bodyA, cCollisionBody* bodyB, float deltaTime );
-		virtual sCollisionManifold FindCollision( cCollisionBody* bodyA, cCollisionBody* bodyB );
+		virtual bool Collide( iCollisionBody* bodyA, iCollisionBody* bodyB, float deltaTime );
+		virtual bool Collide( cRigidBody* bodyA, cSoftBody* bodyB, float deltaTime );
+		virtual bool Collide( cRigidBody* bodyA, cRigidBody* bodyB, float deltaTime );
+		virtual sCollisionManifold FindCollision( iCollisionBody* bodyA, iCollisionBody* bodyB );
+
+		virtual void SolveCollision( iCollisionBody* bodyA, iCollisionBody* bodyB, sCollisionManifold collisionResult, int c );
+		virtual void SolveCollision( cRigidBody* bodyA, cSoftBody* bodyB, sCollisionManifold collisionResult, int c );
 
 		//virtual void AddRigidBody(iRigidBody* rigidBody);
 		//virtual void RemoveRigidBody(iRigidBody* rigidBody);
@@ -48,9 +53,14 @@ namespace nPhysics
 
 		//std::vector<cRigidBody*> mRigidBody;
 
-		std::vector<cCollisionBody*> vecColliders1;
-		std::vector<cCollisionBody*> vecColliders2;
+		//std::vector<iCollisionBody*> vecColliders1;
+		//std::vector<iCollisionBody*> vecColliders2;
 
-		std::vector<cCollisionBody*> mRigidBody;
+		//std::vector<iCollisionBody*> mCollisionBody;
+
+		std::vector<iCollisionBody*> vecColliders1;
+		std::vector<iCollisionBody*> vecColliders2;
+
+		std::vector<iCollisionBody*> mCollisionBody;
 	};
 }

@@ -19,29 +19,35 @@ namespace nPhysics
 	}
 
 	iRigidBody* cPhysicsFactory::CreateRigidBody(const sRigidBodyDesc& desc, iShape* shape)
-	{
+	{	
 		return new cRigidBody(desc, shape);
+		//return nullptr;
 	}
 
 	iSoftBody* cPhysicsFactory::CreateSoftBody( const sSoftBodyDesc& desc )
 	{
 		return new cSoftBody( desc );
+		//return nullptr;
 	}
 
-	iCollisionBody* cPhysicsFactory::CreateBody( const sBodyDesc& desc, iCollisionBody::objectTypes type )
-	{
-		switch( type )
-		{
-			case nPhysics::iCollisionBody::RIGID_BODY:
-				break;
-			case nPhysics::iCollisionBody::SOFT_BODY:							
-				break;
-			default:
-				break;
-		}
-
-		return nullptr;
-	}
+	//iCollisionBody* cPhysicsFactory::CreateBody( const sBodyDesc& desc, eObjectType type )
+	//{
+	//	switch( type )
+	//	{
+	//		case nPhysics::RIGID_BODY:
+	//		{
+	//			iRigidBody* theRB = CreateRigidBody( desc, shape );
+	//		}
+	//			return 
+	//			break;
+	//		case nPhysics::SOFT_BODY:
+	//			break;
+	//		default:
+	//			break;
+	//	}
+	//
+	//	return nullptr;
+	//}
 
 
 

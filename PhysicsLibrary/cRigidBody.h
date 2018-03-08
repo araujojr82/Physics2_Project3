@@ -36,7 +36,10 @@ namespace nPhysics
 		virtual void ApplyImpulseAtPoint( glm::vec3 impulse, glm::vec3 relativePoint );
 
 		void setMass( float massIn );
+		void getMass( float &massOut );
+		void getInvMass( float &invMassOut );
 		void setStatic( bool isStatic );
+		bool isStatic();
 
 		eObjectType myType;
 		eObjectType getType();
@@ -56,6 +59,6 @@ namespace nPhysics
 		float mMass;
 		float mInvMass;
 
-		bool isStatic;
+		bool bIsStatic;
 	};
 }

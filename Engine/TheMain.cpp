@@ -748,31 +748,146 @@ void loadObjectsFile( std::string fileName )
 			// Save this mesh into a global variable
 			::g_pVAOManager->lookupMeshFromName( "cloth", ::g_theClothMesh );
 
-			// Create a RigidBody Description
+			// Create a SoftBody Description
 			nPhysics::sSoftBodyDesc theDesc;
-			//theDesc.StaticIndices
-			//theDesc.TriangulatedIndices
-			//theDesc.Vertices
 
-			for( int t = 0; t != ::g_theClothMesh.numberOfTriangles; t++ )
-			{
-				nPhysics::sTriangle* theTriangle = new nPhysics::sTriangle();
-				theTriangle->nodeID_0 = ::g_theClothMesh.pTriangles[t].vertex_ID_0;
-				theTriangle->nodeID_1 = ::g_theClothMesh.pTriangles[t].vertex_ID_1;
-				theTriangle->nodeID_2 = ::g_theClothMesh.pTriangles[t].vertex_ID_2;
-
-				theDesc.TriangulatedIndices.push_back( theTriangle );
-			}
-
+			float minZ, maxZ, minX, maxX;		
+			// This will add all the vertices to the description
+			// Also I'm calculating the corners' position
 			for( int v = 0; v != ::g_theClothMesh.numberOfVertices; v++ )
 			{
 				theDesc.Vertices.push_back( glm::vec3( ::g_theClothMesh.pVertices[v].x,
 													   ::g_theClothMesh.pVertices[v].y,
 													   ::g_theClothMesh.pVertices[v].z ) );
-				
-				//if( v < ::g_theClothMesh.numberOfVertices / 2 )
-					theDesc.StaticIndices.push_back( v );
+
+				if( v == 0 )
+				{
+					minX = ::g_theClothMesh.pVertices[v].x;
+					maxX = ::g_theClothMesh.pVertices[v].x;
+					minZ = ::g_theClothMesh.pVertices[v].z;
+					maxZ = ::g_theClothMesh.pVertices[v].z;
+				}
+				else
+				{
+					if( ::g_theClothMesh.pVertices[v].x < minX ) minX = ::g_theClothMesh.pVertices[v].x;
+					if( ::g_theClothMesh.pVertices[v].x > maxX ) maxX = ::g_theClothMesh.pVertices[v].x;
+					if( ::g_theClothMesh.pVertices[v].z < minZ ) minZ = ::g_theClothMesh.pVertices[v].z;
+					if( ::g_theClothMesh.pVertices[v].z > maxZ ) maxZ = ::g_theClothMesh.pVertices[v].z;
+				}
 			}
+
+			glm::vec3 topLeft, topRight, bottomLeft, bottomRight;
+			topLeft = glm::vec3( minX, 0.0f, maxZ );
+			topRight = glm::vec3( maxX, 0.0f, maxZ );
+			bottomLeft = glm::vec3( minX, 0.0f, minZ );
+			bottomRight = glm::vec3( maxX, 0.0f, minZ );
+			
+			// Bending Distances
+			float bendEdgeDist = glm::distance( topLeft, topRight );
+			float bendDiagDist = glm::distance( topLeft, bottomRight );
+
+			// Structural (edge) and Sher (diagonal) distances
+			float edgeDist = 0.0f;
+			float diagDist = 0.0f;
+
+			// Use the 1st triangle to measure the distances
+			{
+				nPhysics::sTriangle* theTriangle = new nPhysics::sTriangle();
+				theTriangle->nodeID_0 = ::g_theClothMesh.pTriangles[0].vertex_ID_0;
+				theTriangle->nodeID_1 = ::g_theClothMesh.pTriangles[0].vertex_ID_1;
+				theTriangle->nodeID_2 = ::g_theClothMesh.pTriangles[0].vertex_ID_2;
+
+				//theDesc.TriangulatedIndices.push_back( theTriangle );
+
+				// Calculate the triangles distance
+				glm::vec3 pos0, pos1, pos2;
+
+				pos0 = glm::vec3( ::g_theClothMesh.pVertices[theTriangle->nodeID_0].x,
+								  ::g_theClothMesh.pVertices[theTriangle->nodeID_0].y,
+								  ::g_theClothMesh.pVertices[theTriangle->nodeID_0].z );
+															 
+				pos1 = glm::vec3( ::g_theClothMesh.pVertices[theTriangle->nodeID_1].x,
+								  ::g_theClothMesh.pVertices[theTriangle->nodeID_1].y,
+								  ::g_theClothMesh.pVertices[theTriangle->nodeID_1].z );
+															 
+				pos2 = glm::vec3( ::g_theClothMesh.pVertices[theTriangle->nodeID_2].x,
+								  ::g_theClothMesh.pVertices[theTriangle->nodeID_2].y,
+								  ::g_theClothMesh.pVertices[theTriangle->nodeID_2].z );
+
+				// Calculating the distances
+				float d01, d02, d12;
+				d01 = glm::distance( pos0, pos1 );
+				d02 = glm::distance( pos0, pos2 );
+				d12 = glm::distance( pos1, pos2 );
+
+				// Comparing the distances
+				if( d01 == d02 )		// d12 must be larger
+				{
+					diagDist = d12;
+					edgeDist = d01;					
+				}
+				else if( d01 == d12 )	// d02 must be larger
+				{
+					diagDist = d02;
+					edgeDist = d01;
+				}
+				else					// d01 must be the largest
+				{
+					diagDist = d01;
+					edgeDist = d02;
+				}
+			}
+
+			// Now that I got all the distances I can create the Springs description
+			for( int i = 0; i != ::g_theClothMesh.numberOfVertices -1; i++ )
+			{
+				for( int j = i+1; j != ::g_theClothMesh.numberOfVertices; j++ )
+				{
+					nPhysics::sConstrain* theConstrain = new nPhysics::sConstrain();
+					theConstrain->nodeID_0 = i;
+					theConstrain->nodeID_1 = j;
+
+					glm::vec3 posVertI = ( glm::vec3( ::g_theClothMesh.pVertices[i].x,
+													  ::g_theClothMesh.pVertices[i].y,
+													  ::g_theClothMesh.pVertices[i].z ) );
+
+					glm::vec3 posVertJ = ( glm::vec3( ::g_theClothMesh.pVertices[j].x,
+													  ::g_theClothMesh.pVertices[j].y,
+													  ::g_theClothMesh.pVertices[j].z ) );
+
+					float distance = glm::distance( posVertI, posVertJ );
+
+					if( distance == edgeDist )			// It's a Structural constrain
+					{
+						theConstrain->type = nPhysics::eConstrainType::STRUCTURAL;
+						theDesc.ConstrainIndices.push_back( theConstrain );
+					}
+
+					else if( distance == diagDist )		// It's a Sher constrain
+					{
+						theConstrain->type = nPhysics::eConstrainType::SHEAR;
+						theDesc.ConstrainIndices.push_back( theConstrain );
+					}
+
+					else if( distance == bendEdgeDist )	// It's a Bending constrain
+					{
+						theConstrain->type = nPhysics::eConstrainType::BEND;
+						theDesc.ConstrainIndices.push_back( theConstrain );
+					}
+
+					else if( distance == bendDiagDist )	// It's a Bending constrain
+					{
+						theConstrain->type = nPhysics::eConstrainType::BEND;
+						theDesc.ConstrainIndices.push_back( theConstrain );
+					}						
+
+					// Find the Top Left and Top Right Nodes and add them to static list
+					if( posVertI == topLeft || posVertI == topRight ) theDesc.StaticIndices.push_back( i );
+				}
+			}
+
+			// Set the radius of the nodes based on the Structural Constrain distance
+			theDesc.radius = edgeDist / 2;
 						
 			pTempGO->textureBlend[0] = 1.0f;
 			pTempGO->textureNames[0] = "square_texture.bmp";

@@ -25,6 +25,8 @@ namespace nPhysics
 
 			cNode* GetOther(cNode* me);
 
+			void ApplyForce();
+
 			float RestingSeparation;	// Set at constr
 			float CurrentSeparation;	// Set at constr
 			glm::vec3 NormalizedSeparationDirection;
@@ -79,13 +81,17 @@ namespace nPhysics
 
 		virtual eObjectType getType();
 
+		void ApplySpringForces();
 		void ApplyForce( glm::vec3 force );
 
 		std::vector<iRigidBody*> getNodeListAsRigidBodies();
 
 	protected:
 		std::vector<cNode*> mNodes;
-		std::vector<cSpring*> mSprings;
+		//std::vector<cSpring*> mSprings;
+		std::vector<cSpring*> mStructural;
+		std::vector<cSpring*> mShear;
+		std::vector<cSpring*> mBend;
 
 	};
 

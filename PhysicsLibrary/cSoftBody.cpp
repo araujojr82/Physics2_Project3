@@ -7,14 +7,14 @@ namespace nPhysics
 	{
 		this->myType = SOFT_BODY;
 
-		// Calculate the radius based on first triangle
-		glm::vec3 vertA = desc.Vertices[desc.TriangulatedIndices[0]->nodeID_0];
-		glm::vec3 vertB = desc.Vertices[desc.TriangulatedIndices[0]->nodeID_1];
+		//// Calculate the radius based on first triangle
+		//glm::vec3 vertA = desc.Vertices[desc.TriangulatedIndices[0]->nodeID_0];
+		//glm::vec3 vertB = desc.Vertices[desc.TriangulatedIndices[0]->nodeID_1];
 
-		float radius = glm::distance( vertA, vertB ) / 2;
+		//float radius = glm::distance( vertA, vertB ) / 2;
 
 		// I'll use the same sphereShape for every node
-		iShape* sphereShape = new cSphereShape( radius );
+		iShape* sphereShape = new cSphereShape( desc.radius );
 
 		// Create one node for each vertice
 		for( int i = 0; i != desc.Vertices.size(); i++ )
@@ -22,7 +22,7 @@ namespace nPhysics
 			sRigidBodyDesc theDesc;
 
 			theDesc.Position = desc.Vertices[i];
-			theDesc.Mass = 0.001f;
+			theDesc.Mass = 0.000001f;
 
 			if( theDesc.Mass == 0.0f )
 				theDesc.invMass = theDesc.Mass;
@@ -35,12 +35,44 @@ namespace nPhysics
 			this->mNodes.push_back( newNode );
 		}
 
-		// Create the springs based on the triangles
-		for ( int i = 0; i != desc.TriangulatedIndices.size(); i++ )
+		//// Create the springs based on the triangles
+		//for ( int i = 0; i != desc.TriangulatedIndices.size(); i++ )
+		//{
+		//	cNode* node0 = this->mNodes[desc.TriangulatedIndices[i]->nodeID_0];
+		//	cNode* node1 = this->mNodes[desc.TriangulatedIndices[i]->nodeID_1];
+		//	cNode* node2 = this->mNodes[desc.TriangulatedIndices[i]->nodeID_2];
+
+		//	// Check if node already has that spring if not create one and attach to both nodes
+		//	if( !node0->HasNeighbour( node1 ) )
+		//	{
+		//		cSpring* spring01 = new cSpring( node0, node1 );
+		//		node0->Springs.push_back( spring01 );
+		//		node1->Springs.push_back( spring01 );
+		//		this->mSprings.push_back( spring01 );
+		//	}
+		//		
+		//	if( !node0->HasNeighbour( node2 ) )
+		//	{
+		//		cSpring* spring02 = new cSpring( node0, node2 );
+		//		node0->Springs.push_back( spring02 );
+		//		node1->Springs.push_back( spring02 );
+		//		this->mSprings.push_back( spring02 );
+		//	}
+		//		
+		//	if( !node1->HasNeighbour( node2 ) )
+		//	{
+		//		cSpring* spring12 = new cSpring( node1, node2 );
+		//		node0->Springs.push_back( spring12 );
+		//		node1->Springs.push_back( spring12 );
+		//		this->mSprings.push_back( spring12 );
+		//	}
+		//}
+
+		// Create the springs based on the constrains
+		for ( int i = 0; i != desc.ConstrainIndices.size(); i++ )
 		{
-			cNode* node0 = this->mNodes[desc.TriangulatedIndices[i]->nodeID_0];
-			cNode* node1 = this->mNodes[desc.TriangulatedIndices[i]->nodeID_1];
-			cNode* node2 = this->mNodes[desc.TriangulatedIndices[i]->nodeID_2];
+			cNode* node0 = this->mNodes[desc.ConstrainIndices[i]->nodeID_0];
+			cNode* node1 = this->mNodes[desc.ConstrainIndices[i]->nodeID_1];
 
 			// Check if node already has that spring if not create one and attach to both nodes
 			if( !node0->HasNeighbour( node1 ) )
@@ -48,23 +80,20 @@ namespace nPhysics
 				cSpring* spring01 = new cSpring( node0, node1 );
 				node0->Springs.push_back( spring01 );
 				node1->Springs.push_back( spring01 );
-				this->mSprings.push_back( spring01 );
-			}
-				
-			if( !node0->HasNeighbour( node2 ) )
-			{
-				cSpring* spring02 = new cSpring( node0, node2 );
-				node0->Springs.push_back( spring02 );
-				node1->Springs.push_back( spring02 );
-				this->mSprings.push_back( spring02 );
-			}
-				
-			if( !node1->HasNeighbour( node2 ) )
-			{
-				cSpring* spring12 = new cSpring( node1, node2 );
-				node0->Springs.push_back( spring12 );
-				node1->Springs.push_back( spring12 );
-				this->mSprings.push_back( spring12 );
+				//this->mSprings.push_back( spring01 );
+
+				switch( desc.ConstrainIndices[i]->type )
+				{
+					case STRUCTURAL :
+						this->mStructural.push_back( spring01 );
+						break;
+					case SHEAR :
+						this->mShear.push_back( spring01 );
+						break;
+					case BEND :
+						this->mBend.push_back( spring01 );
+						break;					
+				}
 			}
 		}
 
@@ -139,6 +168,44 @@ namespace nPhysics
 		return this->myType;
 	}
 
+	void cSoftBody::ApplySpringForces()
+	{
+		//for( int times = 0; times < 30; times++ ) // iterate over all constraints several times
+		//{
+		//	for( int i = 0; i != mSprings.size(); i++ )
+		//	{
+		//		mSprings[i]->ApplyForce();
+		//	}
+		//}
+
+		for( int times = 0; times < 15; times++ ) // iterate over all constraints several times
+		{
+			for( int i = 0; i != mStructural.size(); i++ )
+			{
+				mStructural[i]->ApplyForce();
+			}
+
+			for( int i = 0; i != mShear.size(); i++ )
+			{
+				mShear[i]->ApplyForce();
+			}
+
+			for( int i = 0; i != mBend.size(); i++ )
+			{
+				mBend[i]->ApplyForce();
+			}
+		}
+
+	}
+
+	void cSoftBody::ApplyForce( glm::vec3 force )
+	{
+		for( int i = 0; i != mNodes.size(); i++ )
+		{
+			mNodes[i]->ApplyForce( force );
+		}
+	}
+
 	std::vector<iRigidBody*> cSoftBody::getNodeListAsRigidBodies()
 	{
 		std::vector<iRigidBody*> theRigidBodies;
@@ -154,7 +221,7 @@ namespace nPhysics
 
 	cSoftBody::cSpring::cSpring( cNode * nodeA, cNode * nodeB )
 	{
-		this->SpringConstantK = 0.3f;
+		this->SpringConstantK = -3.0f;
 		this->NodeA = nodeA;
 		this->NodeB = nodeB;
 
@@ -180,6 +247,72 @@ namespace nPhysics
 		return nullptr;
 	}
 
+	void cSoftBody::cSpring::ApplyForce()
+	{
+		glm::vec3 posA, posB, velA, velB;
+
+		this->NodeA->GetPosition( posA );
+		this->NodeB->GetPosition( posB );
+
+		this->NodeA->GetVelocity( velA );
+		this->NodeB->GetVelocity( velB );
+
+		glm::vec3 relPos = posB - posA;
+		glm::vec3 relVel = velB - velA;
+
+		float current_distance = glm::length(relPos);
+		
+		// The offset vector that could moves p1 into a distance of rest_distance to p2
+		glm::vec3 correctionVector = relPos * ( 1 - this->RestingSeparation / current_distance ); 
+
+		// Lets make it half that length, so that we can move BOTH p1 and p2.
+		glm::vec3 correctionVectorHalf = correctionVector * 0.5f;
+
+		if( correctionVectorHalf != glm::vec3( 0.0f ) )
+		{
+			int breakpoint = 1;
+		}
+
+		posA = posA + correctionVectorHalf;
+		posB = posB - correctionVectorHalf;
+		
+		if( !this->NodeA->isStatic() )		
+			this->NodeA->SetPosition( posA );
+		if( !this->NodeB->isStatic() )		
+			this->NodeB->SetPosition( posB );
+
+		//// Prevent underflow
+		//for( int i = 0; i < 3; ++i )
+		//{
+		//	relPos[i] = ( fabsf( relPos[i] ) < 0.0000001f ) ? 0.0f : relPos[i];
+		//	relVel[i] = ( fabsf( relVel[i] ) < 0.0000001f ) ? 0.0f : relVel[i];
+		//}
+
+		//float x = glm::length( relPos ) - this->RestingSeparation;
+		//float v = glm::length( relVel );
+
+		//float b = 0.0f;
+
+		//if( x != 0.0f || v != 0.0f )
+		//{
+		//	int breakbpoint = 0;
+		//}
+
+		//float F = ( -this->SpringConstantK * x ) + ( -b * v );
+
+		//float invMassA, invMassB;
+		//this->NodeA->getInvMass( invMassA );
+		//this->NodeB->getInvMass( invMassB );
+
+		//glm::vec3 impulse = glm::normalize( relPos ) * F;
+
+		//if( !this->NodeA->isStatic() )
+		//this->NodeA->ApplyImpulse( impulse * invMassA );
+
+		//if( !this->NodeB->isStatic() )
+		//this->NodeB->ApplyImpulse( impulse*  -1.0f * invMassB );
+
+	}
 
 	//cSoftBody::cNode::cNode( const sRigidBodyDesc& desc, iShape* shape ) : cRigidBody( desc, shape )
 	//{

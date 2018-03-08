@@ -62,5 +62,7 @@ namespace nPhysics
 		std::vector<iCollisionBody*> vecColliders2;
 
 		std::vector<iCollisionBody*> mCollisionBody;
+
+		std::vector<cSoftBody*> mSoftyBody;
 	};
 }

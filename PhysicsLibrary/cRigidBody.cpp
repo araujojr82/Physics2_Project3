@@ -13,7 +13,7 @@ namespace nPhysics
 		, mRotation( desc.Rotation )
 		, mAcceleration( desc.Acceleration )
 		, mAngularVelocity( desc.AngularVelocity )
-		, isStatic( false )
+		, bIsStatic( false )
 	{
 		
 	}
@@ -119,9 +119,24 @@ namespace nPhysics
 			mInvMass = 1 / mInvMass;
 	}
 
+	void cRigidBody::getMass( float &massOut )
+	{
+		massOut = this->mMass;
+	}
+
+	void cRigidBody::getInvMass( float & invMassOut )
+	{
+		invMassOut = this->mInvMass;
+	}
+
 	void cRigidBody::setStatic( bool isStatic )
 	{
-		this->isStatic = isStatic;
+		this->bIsStatic = isStatic;
+	}
+
+	bool cRigidBody::isStatic()
+	{
+		return this->bIsStatic;
 	}
 
 

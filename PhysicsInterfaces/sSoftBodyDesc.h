@@ -6,6 +6,13 @@
 
 namespace nPhysics
 {
+	enum eConstrainType
+	{
+		STRUCTURAL = 0,
+		SHEAR = 1,
+		BEND = 2
+	};
+
 	struct sTriangle
 	{
 		int nodeID_0;
@@ -13,12 +20,23 @@ namespace nPhysics
 		int nodeID_2;
 	};
 
+	struct sConstrain
+	{
+		eConstrainType type;
+		int nodeID_0;
+		int nodeID_1;
+	};
+
 	struct sSoftBodyDesc : public sBodyDesc
 	{
-		//size_t can be a structure that represents triangles
+		
 		std::vector<glm::vec3> Vertices;
 		std::vector<sTriangle*> TriangulatedIndices;
-		// The points that are static (dont move)
-		std::vector<int> StaticIndices; 
+
+		std::vector<sConstrain*> ConstrainIndices;
+		
+		std::vector<int> StaticIndices; // The points that are static (dont move)
+
+		float radius;
 	};
 }

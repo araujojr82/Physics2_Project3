@@ -13,7 +13,7 @@ namespace nPhysics
 	public:
 		virtual ~iSoftBody() {}
 
-		virtual void GetNodePosition(size_t index, glm::vec3 nodePositionOut) = 0;
+		virtual void GetNodePosition(size_t index, glm::vec3 &nodePositionOut) = 0;
 		virtual size_t NumNodes() = 0;
 
 	protected:

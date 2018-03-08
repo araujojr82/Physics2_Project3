@@ -42,7 +42,7 @@ namespace nPhysics
 			// Call the superclass constructor in the subclass constructor
 			cNode( const sRigidBodyDesc& desc, iShape* shape ) : cRigidBody( desc, shape )
 			{
-				this->IsStatic = false;
+				//this->IsStatic = false;
 				//this->Mass = 0.0f;
 				//this->Radius = 0.0f;
 				//this->Position = glm::vec3( 0.0f );
@@ -56,7 +56,7 @@ namespace nPhysics
 
 			// std::vector<cNode*> Neighbors; The Springs knows the neighbors
 
-			bool IsStatic;
+			//bool IsStatic;
 			//float Mass;
 			//float Radius;
 			//glm::vec3 Position;
@@ -74,7 +74,7 @@ namespace nPhysics
 		// Get miminum height - radius
 		// Get maximum height + radius (DONT FORGET RADIUS)
 
-		virtual void GetNodePosition( size_t index, glm::vec3 nodePositionOut );
+		virtual void GetNodePosition( size_t index, glm::vec3 &nodePositionOut );
 		virtual size_t NumNodes();
 
 		virtual eObjectType getType();

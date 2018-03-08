@@ -22,7 +22,7 @@ namespace nPhysics
 			sRigidBodyDesc theDesc;
 
 			theDesc.Position = desc.Vertices[i];
-			theDesc.Mass = 0.1f;
+			theDesc.Mass = 0.001f;
 
 			if( theDesc.Mass == 0.0f )
 				theDesc.invMass = theDesc.Mass;
@@ -71,7 +71,7 @@ namespace nPhysics
 		// Set the static nodes
 		for( int i = 0; i != desc.StaticIndices.size(); i++ )
 		{
-			this->mNodes[desc.StaticIndices[i]]->IsStatic = true;
+			this->mNodes[desc.StaticIndices[i]]->setStatic( true );
 		}
 	}
 
@@ -119,10 +119,12 @@ namespace nPhysics
 		return;
 	}
 
-	void cSoftBody::GetNodePosition( size_t index, glm::vec3 nodePositionOut )
+	void cSoftBody::GetNodePosition( size_t index, glm::vec3 &nodePositionOut )
 	{
 		if( index < this->mNodes.size() )
+		{
 			this->mNodes[index]->GetPosition( nodePositionOut );
+		}			
 
 		return;
 	}

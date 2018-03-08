@@ -47,6 +47,7 @@ cGameObject::cGameObject()
 	this->btRigidBody = NULL;
 	
 	this->isSoftBody = false;
+	this->softBody = NULL;
 	
 	this->position = glm::vec3(0.0f);
 

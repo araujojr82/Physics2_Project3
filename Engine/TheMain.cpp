@@ -97,6 +97,7 @@ cBasicTextureManager*	g_pTextureManager = 0;
 cDebugRenderer*			g_pDebugRenderer = 0;
 
 cMesh g_theClothMesh;
+cGameObject* g_pTheClothGO = NULL;
 
 // This contains the AABB grid for the terrain...
 //cAABBBroadPhase* g_terrainAABBBroadPhase = 0;
@@ -202,6 +203,24 @@ static void error_callback( int error, const char* description )
 {
 	fprintf( stderr, "Error: %s\n", description );
 }
+
+void updateClothMesh( GLint sexyShaderID )
+{
+	for( int v = 0; v != ::g_theClothMesh.numberOfVertices; v++ )
+	{
+		glm::vec3 position = glm::vec3( 0.0f );
+		::g_pTheClothGO->softBody->GetNodePosition( v, position );
+		::g_theClothMesh.pVertices[v].x = position.x;
+		::g_theClothMesh.pVertices[v].y = position.y;
+		::g_theClothMesh.pVertices[v].z = position.z;
+		std::cout << "Node (" << v << ") pos: "
+			<< position.x << ", "
+			<< position.y << ", "
+			<< position.z << std::endl;
+	}
+	::g_pVAOManager->loadMeshIntoVAO( ::g_theClothMesh, sexyShaderID, false );
+}
+
 
 int main( void )
 {
@@ -425,18 +444,10 @@ int main( void )
 	// Gets the "current" time "tick" or "step"
 	double lastTimeStep = glfwGetTime();
 
-	//// Testing if the mesh could be changed every frame
-	//::g_pVAOManager->lookupMeshFromName("cloth", ::g_theClothMesh );
-
 	// Main game or application loop
 	while( !glfwWindowShouldClose( window ) )
 	{
-		for (int v = 0; v != ::g_theClothMesh.numberOfVertices; v++ )
-		{
-			::g_theClothMesh.pVertices[v].x *= 1.001f;
-		}
-		::g_pVAOManager->loadMeshIntoVAO( ::g_theClothMesh, sexyShaderID, false);
-
+		updateClothMesh( sexyShaderID );
 
 		float ratio;
 		int width, height;
@@ -758,6 +769,9 @@ void loadObjectsFile( std::string fileName )
 				theDesc.Vertices.push_back( glm::vec3( ::g_theClothMesh.pVertices[v].x,
 													   ::g_theClothMesh.pVertices[v].y,
 													   ::g_theClothMesh.pVertices[v].z ) );
+				
+				//if( v < ::g_theClothMesh.numberOfVertices / 2 )
+					theDesc.StaticIndices.push_back( v );
 			}
 						
 			pTempGO->textureBlend[0] = 1.0f;
@@ -769,6 +783,9 @@ void loadObjectsFile( std::string fileName )
 			
 			nPhysics::iSoftBody* newBody = ::g_pThePhysicsFactory->CreateSoftBody( theDesc );
 			::g_pThePhysicsWorld->AddBody( newBody );
+
+			::g_pTheClothGO = pTempGO;
+			pTempGO->softBody = newBody;
 		}
 		else
 		{

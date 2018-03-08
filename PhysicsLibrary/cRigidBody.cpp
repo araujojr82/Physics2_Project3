@@ -13,6 +13,7 @@ namespace nPhysics
 		, mRotation( desc.Rotation )
 		, mAcceleration( desc.Acceleration )
 		, mAngularVelocity( desc.AngularVelocity )
+		, isStatic( false )
 	{
 		
 	}
@@ -88,7 +89,7 @@ namespace nPhysics
 
 	void cRigidBody::ApplyForce( glm::vec3 force )
 	{
-		mAcceleration += force * mMass;
+		mAcceleration += force * mMass;		
 	}
 
 	void cRigidBody::ApplyForceAtPoint( glm::vec3 force, glm::vec3 velocity )
@@ -103,14 +104,32 @@ namespace nPhysics
 	}
 
 	void cRigidBody::ApplyImpulseAtPoint( glm::vec3 impulse, glm::vec3 relativePoint )
-	{
+	{	
 		mVelocity += impulse * mInvMass;
 		mAngularVelocity += glm::cross( relativePoint, impulse * mInvMass );
 	}
+
+	void cRigidBody::setMass( float massIn )
+	{
+		mMass = massIn;
+
+		if( mMass == 0.0f )
+			mInvMass = mMass;
+		else
+			mInvMass = 1 / mInvMass;
+	}
+
+	void cRigidBody::setStatic( bool isStatic )
+	{
+		this->isStatic = isStatic;
+	}
+
 
 	eObjectType cRigidBody::getType()
 	{
 		return this->myType;
 	}
+
+	
 
 }

@@ -2,6 +2,7 @@
 #define _cGameObject_HG_
 
 #include "../PhysicsInterfaces/iRigidBody.h"
+#include "../PhysicsInterfaces/iSoftBody.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -27,6 +28,8 @@ public:
 
 	nPhysics::iRigidBody* rigidBody;
 	nPhysics::iRigidBody* btRigidBody;
+
+	nPhysics::iSoftBody* softBody;
 
 	bool isSoftBody;
 	glm::vec3 position;

@@ -14,7 +14,8 @@ namespace nPhysics
 		//float radius = glm::distance( vertA, vertB ) / 2;
 
 		// I'll use the same sphereShape for every node
-		iShape* sphereShape = new cSphereShape( desc.radius );
+		//iShape* sphereShape = new cSphereShape( desc.radius );
+		iShape* sphereShape = new cSphereShape( 0.0f );
 
 		// Create one node for each vertice
 		for( int i = 0; i != desc.Vertices.size(); i++ )
@@ -22,7 +23,7 @@ namespace nPhysics
 			sRigidBodyDesc theDesc;
 
 			theDesc.Position = desc.Vertices[i];
-			theDesc.Mass = 0.000001f;
+			theDesc.Mass = 0.1f;
 
 			if( theDesc.Mass == 0.0f )
 				theDesc.invMass = theDesc.Mass;
@@ -32,6 +33,7 @@ namespace nPhysics
 			theDesc.PrevPosition = theDesc.Position;
 
 			cNode* newNode = new cNode( theDesc, sphereShape );
+			newNode->setParticle( true );
 			this->mNodes.push_back( newNode );
 		}
 
@@ -170,14 +172,6 @@ namespace nPhysics
 
 	void cSoftBody::ApplySpringForces()
 	{
-		//for( int times = 0; times < 30; times++ ) // iterate over all constraints several times
-		//{
-		//	for( int i = 0; i != mSprings.size(); i++ )
-		//	{
-		//		mSprings[i]->ApplyForce();
-		//	}
-		//}
-
 		for( int times = 0; times < 15; times++ ) // iterate over all constraints several times
 		{
 			for( int i = 0; i != mStructural.size(); i++ )
@@ -195,7 +189,6 @@ namespace nPhysics
 				mBend[i]->ApplyForce();
 			}
 		}
-
 	}
 
 	void cSoftBody::ApplyForce( glm::vec3 force )
@@ -221,7 +214,7 @@ namespace nPhysics
 
 	cSoftBody::cSpring::cSpring( cNode * nodeA, cNode * nodeB )
 	{
-		this->SpringConstantK = -3.0f;
+		this->SpringConstantK = 1.0f;
 		this->NodeA = nodeA;
 		this->NodeB = nodeB;
 

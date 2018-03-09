@@ -14,6 +14,7 @@ namespace nPhysics
 		, mAcceleration( desc.Acceleration )
 		, mAngularVelocity( desc.AngularVelocity )
 		, bIsStatic( false )
+		, bIsParticle( false )
 	{
 		
 	}
@@ -132,6 +133,16 @@ namespace nPhysics
 	void cRigidBody::setStatic( bool isStatic )
 	{
 		this->bIsStatic = isStatic;
+	}
+
+	void cRigidBody::setParticle( bool isParticle )
+	{
+		this->bIsParticle = isParticle;
+	}
+
+	bool cRigidBody::isParticle()
+	{
+		return this->bIsParticle;
 	}
 
 	bool cRigidBody::isStatic()

@@ -76,3 +76,16 @@ void cIntegration::Euler( glm::vec3& position, glm::vec3& velocity, glm::vec3& a
 
 	return;
 }
+
+#define DAMPING 0.01
+
+void cIntegration::Verlet( glm::vec3 & position, glm::vec3 & oldPosition, glm::vec3 & acceleration, float dt )
+{
+	glm::vec3 tempPosition = position;
+	position = position + ( position - oldPosition ) * glm::vec3( 1.0 - DAMPING ) + ( acceleration * dt );
+	oldPosition = tempPosition;
+
+	acceleration = glm::vec3( 0.0f );
+
+	return;
+}

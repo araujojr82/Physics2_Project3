@@ -213,10 +213,10 @@ void updateClothMesh( GLint sexyShaderID )
 		::g_theClothMesh.pVertices[v].x = position.x;
 		::g_theClothMesh.pVertices[v].y = position.y;
 		::g_theClothMesh.pVertices[v].z = position.z;
-		std::cout << "Node (" << v << ") pos: "
-			<< position.x << ", "
-			<< position.y << ", "
-			<< position.z << std::endl;
+		//std::cout << "Node (" << v << ") pos: "
+		//	<< position.x << ", "
+		//	<< position.y << ", "
+		//	<< position.z << std::endl;
 	}
 	::g_pVAOManager->loadMeshIntoVAO( ::g_theClothMesh, sexyShaderID, false );
 }

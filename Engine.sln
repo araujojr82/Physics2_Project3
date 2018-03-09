@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{FB5E187A-63F8-4864-946A-187E7F295638}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhysicsInterfaces", "PhysicsInterfaces\PhysicsInterfaces.vcxproj", "{520130CC-8758-4776-9DA5-40D421D0D4B8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhysicsLibrary", "PhysicsLibrary\PhysicsLibrary.vcxproj", "{57FA7078-9831-45FD-AD41-AFF16B594846}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PhysicsLibraryBullet", "PhysicsLibraryBullet\PhysicsLibraryBullet.vcxproj", "{8183D12E-B3DD-47AA-BEEB-48C399662918}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,14 +41,6 @@ Global
 		{57FA7078-9831-45FD-AD41-AFF16B594846}.Release|x64.Build.0 = Release|x64
 		{57FA7078-9831-45FD-AD41-AFF16B594846}.Release|x86.ActiveCfg = Release|Win32
 		{57FA7078-9831-45FD-AD41-AFF16B594846}.Release|x86.Build.0 = Release|Win32
-		{8183D12E-B3DD-47AA-BEEB-48C399662918}.Debug|x64.ActiveCfg = Debug|x64
-		{8183D12E-B3DD-47AA-BEEB-48C399662918}.Debug|x64.Build.0 = Debug|x64
-		{8183D12E-B3DD-47AA-BEEB-48C399662918}.Debug|x86.ActiveCfg = Debug|Win32
-		{8183D12E-B3DD-47AA-BEEB-48C399662918}.Debug|x86.Build.0 = Debug|Win32
-		{8183D12E-B3DD-47AA-BEEB-48C399662918}.Release|x64.ActiveCfg = Release|x64
-		{8183D12E-B3DD-47AA-BEEB-48C399662918}.Release|x64.Build.0 = Release|x64
-		{8183D12E-B3DD-47AA-BEEB-48C399662918}.Release|x86.ActiveCfg = Release|Win32
-		{8183D12E-B3DD-47AA-BEEB-48C399662918}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

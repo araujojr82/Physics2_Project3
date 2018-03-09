@@ -39,6 +39,8 @@ namespace nPhysics
 		void getMass( float &massOut );
 		void getInvMass( float &invMassOut );
 		void setStatic( bool isStatic );
+		void setParticle( bool isParticle );
+		bool isParticle();
 		bool isStatic();
 
 		eObjectType myType;
@@ -60,5 +62,6 @@ namespace nPhysics
 		float mInvMass;
 
 		bool bIsStatic;
+		bool bIsParticle;
 	};
 }

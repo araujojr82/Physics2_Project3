@@ -23,7 +23,7 @@ namespace nPhysics
 			sRigidBodyDesc theDesc;
 
 			theDesc.Position = desc.Vertices[i];
-			theDesc.Mass = 0.1f;
+			theDesc.Mass = 1.0f; //0.001f;
 
 			if( theDesc.Mass == 0.0f )
 				theDesc.invMass = theDesc.Mass;

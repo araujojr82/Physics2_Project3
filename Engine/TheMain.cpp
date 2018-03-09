@@ -59,11 +59,11 @@ f_CreateFactory CreateFactory = NULL;
 nPhysics::iPhysicsWorld* g_pThePhysicsWorld;
 nPhysics::iPhysicsFactory* g_pThePhysicsFactory;
 
-nPhysics::iPhysicsWorld* g_pBulletPhysicsWorld;
-nPhysics::iPhysicsFactory* g_pBulletPhysicsFactory;
+//nPhysics::iPhysicsWorld* g_pBulletPhysicsWorld;
+//nPhysics::iPhysicsFactory* g_pBulletPhysicsFactory;
 
 std::string libraryFile = "PhysicsLibrary.dll";
-std::string bulletLibraryFile = "PhysicsLibraryBullet.dll";
+//std::string bulletLibraryFile = "PhysicsLibraryBullet.dll";
 
 bool g_bUseBulletPhysics = false;
 // END OF STUFF FOR PHYSICS LIBRARY
@@ -248,29 +248,29 @@ int main( void )
 	::g_pThePhysicsWorld = ::g_pThePhysicsFactory->CreateWorld();	
 	//------------------------------------------------------------------------------ End of Physics Library stuff
 
-	//------------------------------------------------------------------------------ Adding Bullet Physics Library
-	//Load the Physics library
-	hGetProckDll = LoadLibraryA( bulletLibraryFile.c_str() );
-	if( !hGetProckDll )
-	{
-		std::cout << "Fail to load Physics Library File!" << std::endl;
-		system( "pause" );
-		return 1;
-	}
+	////------------------------------------------------------------------------------ Adding Bullet Physics Library
+	////Load the Physics library
+	//hGetProckDll = LoadLibraryA( bulletLibraryFile.c_str() );
+	//if( !hGetProckDll )
+	//{
+	//	std::cout << "Fail to load Physics Library File!" << std::endl;
+	//	system( "pause" );
+	//	return 1;
+	//}
 
-	// Creating the Physics Factory from the Library
-	//std::string createFactoryName = "CreateFactory";
+	//// Creating the Physics Factory from the Library
+	////std::string createFactoryName = "CreateFactory";
 
-	CreateFactory = ( f_CreateFactory )GetProcAddress( hGetProckDll, createFactoryName.c_str() );
-	if( !CreateFactory )
-	{
-		std::cout << "Where's the CreateFactory?" << std::endl;
-		system( "pause" );
-		return 1;
-	}
-	::g_pBulletPhysicsFactory = CreateFactory();
-	::g_pBulletPhysicsWorld = ::g_pBulletPhysicsFactory->CreateWorld();
-	//------------------------------------------------------------------------------ End of Bullet Physics Library stuff
+	//CreateFactory = ( f_CreateFactory )GetProcAddress( hGetProckDll, createFactoryName.c_str() );
+	//if( !CreateFactory )
+	//{
+	//	std::cout << "Where's the CreateFactory?" << std::endl;
+	//	system( "pause" );
+	//	return 1;
+	//}
+	//::g_pBulletPhysicsFactory = CreateFactory();
+	//::g_pBulletPhysicsWorld = ::g_pBulletPhysicsFactory->CreateWorld();
+	////------------------------------------------------------------------------------ End of Bullet Physics Library stuff
 
 	GLFWwindow* window;
 	GLint mvp_location; //vpos_location, vcol_location;
@@ -397,7 +397,8 @@ int main( void )
 	}
 	::g_pTextureManager->Create2DTextureFromBMPFile( "Rough_rock_015_COLOR.bmp", true );
 	::g_pTextureManager->Create2DTextureFromBMPFile( "Red_Marble_001_COLOR.bmp", true );
-	::g_pTextureManager->Create2DTextureFromBMPFile("square_texture.bmp", true);	
+	::g_pTextureManager->Create2DTextureFromBMPFile( "square_texture.bmp", true);	
+	::g_pTextureManager->Create2DTextureFromBMPFile( "canada.bmp", true );	
 	
 	cMesh terrainMesh;
 	
@@ -571,9 +572,9 @@ int main( void )
 		ProcessCameraInput( window, deltaTime );
 		
 		// Physics Calculation
-		if( g_bUseBulletPhysics )		
-			::g_pBulletPhysicsWorld->TimeStep( ( float )deltaTime );
-		else
+		//if( g_bUseBulletPhysics )		
+		//	::g_pBulletPhysicsWorld->TimeStep( ( float )deltaTime );
+		//else
 			::g_pThePhysicsWorld->TimeStep( ( float )deltaTime );
 		
 		lastTimeStep = curTime;
@@ -734,7 +735,7 @@ void loadObjectsFile( std::string fileName )
 			float radius = tempMesh.maxExtent / 2 * pTempGO->scale;
 			
 			newBody = ::g_pThePhysicsFactory->CreateRigidBody( theDesc, ::g_pThePhysicsFactory->CreateSphere( radius ) );
-			newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, ::g_pThePhysicsFactory->CreateSphere( radius ) );
+			//newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, ::g_pThePhysicsFactory->CreateSphere( radius ) );
 
 			//::g_pThePhysicsWorld->AddRigidBody(newBody);			
 			//::g_pBulletPhysicsWorld->AddRigidBody(newBulletBody);
@@ -890,7 +891,8 @@ void loadObjectsFile( std::string fileName )
 			theDesc.radius = edgeDist / 2;
 						
 			pTempGO->textureBlend[0] = 1.0f;
-			pTempGO->textureNames[0] = "square_texture.bmp";
+			//pTempGO->textureNames[0] = "square_texture.bmp";
+			pTempGO->textureNames[0] = "canada.bmp";
 			pTempGO->isSoftBody = true;
 			pTempGO->position = glm::vec3(	allObjects[index].x,
 											allObjects[index].y,
@@ -920,7 +922,7 @@ void loadObjectsFile( std::string fileName )
 			float planeConst = glm::dot( theDesc.Position, planeNormal );
 
 			newBody = ::g_pThePhysicsFactory->CreateRigidBody( theDesc, g_pThePhysicsFactory->CreatePlane( planeNormal, planeConst ) );
-			newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, g_pThePhysicsFactory->CreatePlane( planeNormal, planeConst ) );
+			//newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, g_pThePhysicsFactory->CreatePlane( planeNormal, planeConst ) );
 
 			//::g_pThePhysicsWorld->AddRigidBody(newBody);
 			//::g_pBulletPhysicsWorld->AddRigidBody(newBulletBody);
@@ -1202,8 +1204,8 @@ void scroll_callback( GLFWwindow* window, double xoffset, double yoffset )
 // ---------------------------------------------------------------------------------------------------------
 void ProcessCameraInput( GLFWwindow *window, double deltaTime )
 {
-	if( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS )
-		glfwSetWindowShouldClose( window, true );
+	//if( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS )
+	//	glfwSetWindowShouldClose( window, true );
 
 	if( glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS )
 		::g_pTheMouseCamera->ProcessKeyboard( FORWARD, ( float )deltaTime );

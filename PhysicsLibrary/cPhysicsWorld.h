@@ -27,10 +27,12 @@ namespace nPhysics
 		virtual sCollisionManifold FindCollision( iCollisionBody* bodyA, iCollisionBody* bodyB );
 		virtual sCollisionManifold FindColSphereSphere( cRigidBody* bodyA, cSphereShape* sphereA, cRigidBody* bodyB, cSphereShape* sphereB );
 		virtual sCollisionManifold FindColSpherePlane( cRigidBody* bodyA, cSphereShape* sphereA, cRigidBody* bodyB, cPlaneShape* planeB );
+		virtual sCollisionManifold FindColSphereParticle( cRigidBody* bodyA, cSphereShape* sphereA, cRigidBody* bodyB, cSphereShape* sphereB );
 
 		virtual void SolveCollision( iCollisionBody* bodyA, iCollisionBody* bodyB, sCollisionManifold collisionResult, int c );
 		virtual void SolveCollision( cRigidBody* m1, cRigidBody* m2, sCollisionManifold collisionResult, int c );
 		virtual void SolveCollision( cRigidBody* bodyA, cSoftBody* bodyB, sCollisionManifold collisionResult, int c );
+		virtual void SolveParticleCollision( cRigidBody* bodyA, cRigidBody* bodyB, sCollisionManifold collisionResult );
 
 		cIntegration myIntegrator;
 

@@ -286,17 +286,17 @@ int main( void )
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 2 );
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0 );
 
-	#ifdef NDEBUG				// nondebug
-		window = glfwCreateWindow( wConfig.width, wConfig.height,
-			wConfig.title.c_str(),
-			glfwGetPrimaryMonitor(),	// Runs in full screen
-			NULL );
-	#else						// debug code
+	//#ifdef NDEBUG				// nondebug
+		//window = glfwCreateWindow( wConfig.width, wConfig.height,
+		//	wConfig.title.c_str(),
+		//	glfwGetPrimaryMonitor(),	// Runs in full screen
+		//	NULL );
+	//#else						// debug code
 		window = glfwCreateWindow( wConfig.width, wConfig.height,
 			wConfig.title.c_str(),
 			NULL, 
 			NULL );
-	#endif
+	//#endif
 
 	if( !window )
 	{
@@ -397,8 +397,7 @@ int main( void )
 	}
 	::g_pTextureManager->Create2DTextureFromBMPFile( "Rough_rock_015_COLOR.bmp", true );
 	::g_pTextureManager->Create2DTextureFromBMPFile( "Red_Marble_001_COLOR.bmp", true );
-	::g_pTextureManager->Create2DTextureFromBMPFile( "square_texture.bmp", true);	
-	::g_pTextureManager->Create2DTextureFromBMPFile( "canada.bmp", true );	
+	::g_pTextureManager->Create2DTextureFromBMPFile( "stripes.bmp", true );	
 	
 	cMesh terrainMesh;
 	
@@ -891,8 +890,7 @@ void loadObjectsFile( std::string fileName )
 			theDesc.radius = edgeDist / 2;
 						
 			pTempGO->textureBlend[0] = 1.0f;
-			//pTempGO->textureNames[0] = "square_texture.bmp";
-			pTempGO->textureNames[0] = "canada.bmp";
+			pTempGO->textureNames[0] = "stripes.bmp";
 			pTempGO->isSoftBody = true;
 			pTempGO->position = glm::vec3(	allObjects[index].x,
 											allObjects[index].y,

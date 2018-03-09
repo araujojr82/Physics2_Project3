@@ -37,39 +37,6 @@ namespace nPhysics
 			this->mNodes.push_back( newNode );
 		}
 
-		//// Create the springs based on the triangles
-		//for ( int i = 0; i != desc.TriangulatedIndices.size(); i++ )
-		//{
-		//	cNode* node0 = this->mNodes[desc.TriangulatedIndices[i]->nodeID_0];
-		//	cNode* node1 = this->mNodes[desc.TriangulatedIndices[i]->nodeID_1];
-		//	cNode* node2 = this->mNodes[desc.TriangulatedIndices[i]->nodeID_2];
-
-		//	// Check if node already has that spring if not create one and attach to both nodes
-		//	if( !node0->HasNeighbour( node1 ) )
-		//	{
-		//		cSpring* spring01 = new cSpring( node0, node1 );
-		//		node0->Springs.push_back( spring01 );
-		//		node1->Springs.push_back( spring01 );
-		//		this->mSprings.push_back( spring01 );
-		//	}
-		//		
-		//	if( !node0->HasNeighbour( node2 ) )
-		//	{
-		//		cSpring* spring02 = new cSpring( node0, node2 );
-		//		node0->Springs.push_back( spring02 );
-		//		node1->Springs.push_back( spring02 );
-		//		this->mSprings.push_back( spring02 );
-		//	}
-		//		
-		//	if( !node1->HasNeighbour( node2 ) )
-		//	{
-		//		cSpring* spring12 = new cSpring( node1, node2 );
-		//		node0->Springs.push_back( spring12 );
-		//		node1->Springs.push_back( spring12 );
-		//		this->mSprings.push_back( spring12 );
-		//	}
-		//}
-
 		// Create the springs based on the constrains
 		for ( int i = 0; i != desc.ConstrainIndices.size(); i++ )
 		{
@@ -93,7 +60,7 @@ namespace nPhysics
 						this->mShear.push_back( spring01 );
 						break;
 					case BEND :
-						this->mBend.push_back( spring01 );
+						//this->mBend.push_back( spring01 );
 						break;					
 				}
 			}

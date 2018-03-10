@@ -14,8 +14,8 @@ namespace nPhysics
 		//float radius = glm::distance( vertA, vertB ) / 2;
 
 		// I'll use the same sphereShape for every node
-		//iShape* sphereShape = new cSphereShape( desc.radius );
-		iShape* sphereShape = new cSphereShape( 0.0f );
+		//iShape* sphereShape = new cSphereShape( 0.0f );
+		iShape* particleShape = new cParticleShape();
 
 		// Create one node for each vertice
 		for( int i = 0; i != desc.Vertices.size(); i++ )
@@ -32,7 +32,7 @@ namespace nPhysics
 
 			theDesc.PrevPosition = theDesc.Position;
 
-			cNode* newNode = new cNode( theDesc, sphereShape );
+			cNode* newNode = new cNode( theDesc, particleShape );
 			newNode->setParticle( true );
 			this->mNodes.push_back( newNode );
 		}

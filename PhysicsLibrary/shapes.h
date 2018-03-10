@@ -42,4 +42,15 @@ namespace nPhysics
 		glm::vec3 mNormal;
 		float mPlaneConst;
 	};
+
+	class cParticleShape : public iShape
+	{
+	public:
+		cParticleShape();
+
+		virtual ~cParticleShape();
+		
+	private:
+		cParticleShape& operator=( const cParticleShape& other );
+	};
 }

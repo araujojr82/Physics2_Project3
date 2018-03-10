@@ -68,4 +68,19 @@ namespace nPhysics
 		planeConstOut = mPlaneConst;
 		return true;
 	}
+
+	cParticleShape::cParticleShape()
+		: iShape( SHAPE_TYPE_PARTICLE )
+	{
+
+	}
+	cParticleShape& cParticleShape::operator=( const cParticleShape& other )
+	{
+		return *this;
+	}
+	cParticleShape::~cParticleShape()
+	{
+
+	}
+
 }

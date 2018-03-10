@@ -166,14 +166,14 @@ namespace nPhysics
 		}
 	}
 
-	std::vector<iRigidBody*> cSoftBody::getNodeListAsRigidBodies()
+	std::vector<cRigidBody*> cSoftBody::getNodeListAsRigidBodies()
 	{
-		std::vector<iRigidBody*> theRigidBodies;
+		std::vector<cRigidBody*> theRigidBodies;
 
 		for( int i = 0; i != this->mNodes.size(); i++ )
 		{
-			iRigidBody* theBody = dynamic_cast< iRigidBody* > ( this->mNodes[i] );
-			theRigidBodies.push_back( theBody );
+			//iRigidBody* theBody = dynamic_cast< iRigidBody* > ( this->mNodes[i] );
+			theRigidBodies.push_back( this->mNodes[i] );
 		}
 
 		return theRigidBodies;

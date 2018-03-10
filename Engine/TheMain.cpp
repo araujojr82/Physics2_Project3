@@ -59,18 +59,8 @@ f_CreateFactory CreateFactory = NULL;
 nPhysics::iPhysicsWorld* g_pThePhysicsWorld;
 nPhysics::iPhysicsFactory* g_pThePhysicsFactory;
 
-//nPhysics::iPhysicsWorld* g_pBulletPhysicsWorld;
-//nPhysics::iPhysicsFactory* g_pBulletPhysicsFactory;
-
 std::string libraryFile = "PhysicsLibrary.dll";
-//std::string bulletLibraryFile = "PhysicsLibraryBullet.dll";
-
-bool g_bUseBulletPhysics = false;
 // END OF STUFF FOR PHYSICS LIBRARY
-
-
-//int g_GameObjNumber = 0;				// game object vector position number 
-//int g_LightObjNumber = 0;				// light object vector position
 
 int g_selectedSphere = -1;
 glm::vec3 prevPosition = glm::vec3( 0.0f );
@@ -98,9 +88,7 @@ cDebugRenderer*			g_pDebugRenderer = 0;
 
 cMesh g_theClothMesh;
 cGameObject* g_pTheClothGO = NULL;
-
-// This contains the AABB grid for the terrain...
-//cAABBBroadPhase* g_terrainAABBBroadPhase = 0;
+bool g_bDrawClothAsSpheres = false;
 
 // Other uniforms:
 GLint uniLoc_materialDiffuse = -1;
@@ -135,10 +123,6 @@ struct sMeshparameters		// for the Meshes' input file
 	std::string meshFilename;
 };
 
-
-//std::vector< glm::vec3 > g_vecPoints;
-//std::vector< pointTriangles > g_vecPoints;
-
 // Forward declare the Functions
 void loadConfigFile( std::string fileName, sWindowConfig& wConfig );
 sGOparameters parseObjLine( std::ifstream &source );
@@ -160,14 +144,10 @@ void DrawRenderStuff( glm::mat4 view, glm::mat4 projection )
 		if( pTheGO->meshName == "ball" )	// HACK
 		{
 			// Draw radius for the spheres...
-			glm::vec3 color = glm::vec3( 1.0f, 1.0f, 0.0f );
-		
+			glm::vec3 color = glm::vec3( 1.0f, 1.0f, 0.0f );		
 			
 			nPhysics::iRigidBody* tempBody;
-			if( g_bUseBulletPhysics )
-				tempBody = pTheGO->btRigidBody;
-			else
-				tempBody = pTheGO->rigidBody;
+			tempBody = pTheGO->rigidBody;
 
 			glm::vec3 center;
 			tempBody->GetPosition( center );
@@ -213,10 +193,6 @@ void updateClothMesh( GLint sexyShaderID )
 		::g_theClothMesh.pVertices[v].x = position.x;
 		::g_theClothMesh.pVertices[v].y = position.y;
 		::g_theClothMesh.pVertices[v].z = position.z;
-		//std::cout << "Node (" << v << ") pos: "
-		//	<< position.x << ", "
-		//	<< position.y << ", "
-		//	<< position.z << std::endl;
 	}
 	::g_pVAOManager->loadMeshIntoVAO( ::g_theClothMesh, sexyShaderID, false );
 }
@@ -247,30 +223,6 @@ int main( void )
 	::g_pThePhysicsFactory = CreateFactory();
 	::g_pThePhysicsWorld = ::g_pThePhysicsFactory->CreateWorld();	
 	//------------------------------------------------------------------------------ End of Physics Library stuff
-
-	////------------------------------------------------------------------------------ Adding Bullet Physics Library
-	////Load the Physics library
-	//hGetProckDll = LoadLibraryA( bulletLibraryFile.c_str() );
-	//if( !hGetProckDll )
-	//{
-	//	std::cout << "Fail to load Physics Library File!" << std::endl;
-	//	system( "pause" );
-	//	return 1;
-	//}
-
-	//// Creating the Physics Factory from the Library
-	////std::string createFactoryName = "CreateFactory";
-
-	//CreateFactory = ( f_CreateFactory )GetProcAddress( hGetProckDll, createFactoryName.c_str() );
-	//if( !CreateFactory )
-	//{
-	//	std::cout << "Where's the CreateFactory?" << std::endl;
-	//	system( "pause" );
-	//	return 1;
-	//}
-	//::g_pBulletPhysicsFactory = CreateFactory();
-	//::g_pBulletPhysicsWorld = ::g_pBulletPhysicsFactory->CreateWorld();
-	////------------------------------------------------------------------------------ End of Bullet Physics Library stuff
 
 	GLFWwindow* window;
 	GLint mvp_location; //vpos_location, vcol_location;
@@ -432,10 +384,7 @@ int main( void )
 				::g_vecGameObjects[i]->textureBlend[0] = 0.0f;
 				::g_vecGameObjects[i]->textureBlend[1] = 1.0f;
 
-				if( g_bUseBulletPhysics )
-					::g_vecGameObjects[i]->btRigidBody->GetPosition( ::prevPosition );
-				else
-					::g_vecGameObjects[i]->rigidBody->GetPosition( ::prevPosition );
+				::g_vecGameObjects[i]->rigidBody->GetPosition( ::prevPosition );
 				break;
 			}
 		}
@@ -538,6 +487,38 @@ int main( void )
 
 		}//for ( int index = 0...
 
+		// Draw the Cloth (Soft Body) as a single Mesh or Spheres
+		if( ::g_bDrawClothAsSpheres )
+		{
+			cGameObject* tempSphereObject = new cGameObject();
+
+			for( int v = 0; v != ::g_theClothMesh.numberOfVertices; v++ )
+			{
+				glm::vec3 position = glm::vec3( 0.0f );
+				::g_pTheClothGO->softBody->GetNodePosition( v, position );
+				::g_theClothMesh.pVertices[v].x = position.x;
+				::g_theClothMesh.pVertices[v].y = position.y;
+				::g_theClothMesh.pVertices[v].z = position.z;
+
+				tempSphereObject->position = position;
+				tempSphereObject->isSoftBody = true;
+				tempSphereObject->meshName = "ball";
+				tempSphereObject->scale = 0.2f;
+
+				tempSphereObject->textureBlend[0] = 1.0f;
+				tempSphereObject->textureNames[0] = "stripes.bmp";
+
+				DrawObject( tempSphereObject );
+			}
+
+			delete tempSphereObject;
+		}
+		else
+		{
+			DrawObject( ::g_pTheClothGO );
+		}
+		
+
 		if( bIsWireframe )
 		{
 			DrawRenderStuff( matView, matProjection );
@@ -571,10 +552,7 @@ int main( void )
 		ProcessCameraInput( window, deltaTime );
 		
 		// Physics Calculation
-		//if( g_bUseBulletPhysics )		
-		//	::g_pBulletPhysicsWorld->TimeStep( ( float )deltaTime );
-		//else
-			::g_pThePhysicsWorld->TimeStep( ( float )deltaTime );
+		::g_pThePhysicsWorld->TimeStep( ( float )deltaTime );
 		
 		lastTimeStep = curTime;
 
@@ -734,16 +712,16 @@ void loadObjectsFile( std::string fileName )
 			float radius = tempMesh.maxExtent / 2 * pTempGO->scale;
 			
 			newBody = ::g_pThePhysicsFactory->CreateRigidBody( theDesc, ::g_pThePhysicsFactory->CreateSphere( radius ) );
-			//newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, ::g_pThePhysicsFactory->CreateSphere( radius ) );
 
-			//::g_pThePhysicsWorld->AddRigidBody(newBody);			
-			//::g_pBulletPhysicsWorld->AddRigidBody(newBulletBody);
 			::g_pThePhysicsWorld->AddBody( newBody );
 
 			pTempGO->rigidBody = newBody;
 			pTempGO->btRigidBody = newBulletBody;
+
+			::g_vecGameObjects.push_back( pTempGO );
 		}
-		else if(pTempGO->meshName == "cloth")
+
+		else if(pTempGO->meshName == "cloth")								// The Cloth (Soft Body)
 		{
 			// Save this mesh into a global variable
 			::g_pVAOManager->lookupMeshFromName( "cloth", ::g_theClothMesh );
@@ -782,9 +760,9 @@ void loadObjectsFile( std::string fileName )
 			bottomLeft = glm::vec3( minX, 0.0f, minZ );
 			bottomRight = glm::vec3( maxX, 0.0f, minZ );
 			
-			// Bending Distances
-			float bendEdgeDist = glm::distance( topLeft, topRight );
-			float bendDiagDist = glm::distance( topLeft, bottomRight );
+			//// Bending Distances
+			//float bendEdgeDist = glm::distance( topLeft, topRight );
+			//float bendDiagDist = glm::distance( topLeft, bottomRight );
 
 			// Structural (edge) and Sher (diagonal) distances
 			float edgeDist = 0.0f;
@@ -869,17 +847,17 @@ void loadObjectsFile( std::string fileName )
 						theDesc.ConstrainIndices.push_back( theConstrain );
 					}
 
-					else if( distance == bendEdgeDist )	// It's a Bending constrain
-					{
-						theConstrain->type = nPhysics::eConstrainType::BEND;
-						theDesc.ConstrainIndices.push_back( theConstrain );
-					}
+					//else if( distance == bendEdgeDist )	// It's a Bending constrain
+					//{
+					//	theConstrain->type = nPhysics::eConstrainType::BEND;
+					//	theDesc.ConstrainIndices.push_back( theConstrain );
+					//}
 
-					else if( distance == bendDiagDist )	// It's a Bending constrain
-					{
-						theConstrain->type = nPhysics::eConstrainType::BEND;
-						theDesc.ConstrainIndices.push_back( theConstrain );
-					}						
+					//else if( distance == bendDiagDist )	// It's a Bending constrain
+					//{
+					//	theConstrain->type = nPhysics::eConstrainType::BEND;
+					//	theDesc.ConstrainIndices.push_back( theConstrain );
+					//}						
 
 					// Find the Top Left and Top Right Nodes and add them to static list
 					if( posVertI == topLeft || posVertI == topRight ) theDesc.StaticIndices.push_back( i );
@@ -901,8 +879,9 @@ void loadObjectsFile( std::string fileName )
 
 			::g_pTheClothGO = pTempGO;
 			pTempGO->softBody = newBody;
+
 		}
-		else
+		else																// Then it must be one of the Planes
 		{
 			pTempGO->textureBlend[0] = 1.0f;
 			pTempGO->textureNames[0] = "Rough_rock_014_COLOR.bmp";
@@ -920,20 +899,14 @@ void loadObjectsFile( std::string fileName )
 			float planeConst = glm::dot( theDesc.Position, planeNormal );
 
 			newBody = ::g_pThePhysicsFactory->CreateRigidBody( theDesc, g_pThePhysicsFactory->CreatePlane( planeNormal, planeConst ) );
-			//newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, g_pThePhysicsFactory->CreatePlane( planeNormal, planeConst ) );
 
-			//::g_pThePhysicsWorld->AddRigidBody(newBody);
-			//::g_pBulletPhysicsWorld->AddRigidBody(newBulletBody);
 			::g_pThePhysicsWorld->AddBody( newBody );
-
 
 			pTempGO->rigidBody = newBody;
 			pTempGO->btRigidBody = newBulletBody;
+
+			::g_vecGameObjects.push_back( pTempGO );
 		}
-
-
-
-		::g_vecGameObjects.push_back( pTempGO );
 	}
 }
 
@@ -1040,23 +1013,11 @@ void DrawObject( cGameObject* pTheGO )
 	}
 	else
 	{
-		if (g_bUseBulletPhysics)
+		if (pTheGO->rigidBody != NULL)
 		{
-			if (pTheGO->btRigidBody != NULL)
-			{
-				pTheGO->btRigidBody->GetPosition(position);
-				pTheGO->btRigidBody->GetRotation(qOrientation);
-			}
-
-		}
-		else
-		{
-			if (pTheGO->rigidBody != NULL)
-			{
-				pTheGO->rigidBody->GetPosition(position);
-				pTheGO->rigidBody->GetRotation(qOrientation);
-			}
-		}
+			pTheGO->rigidBody->GetPosition(position);
+			pTheGO->rigidBody->GetRotation(qOrientation);
+		}		
 	}
 
 	// 'model' or 'world' matrix
@@ -1142,6 +1103,11 @@ void DrawObject( cGameObject* pTheGO )
 		glEnable( GL_CULL_FACE );
 	}
 
+	if( pTheGO->isSoftBody )
+	{
+		glDisable( GL_CULL_FACE );
+	}
+
 	glCullFace( GL_BACK );
 
 	glBindVertexArray( VAODrawInfo.VAO_ID );
@@ -1217,47 +1183,4 @@ void ProcessCameraInput( GLFWwindow *window, double deltaTime )
 		::g_pTheMouseCamera->ProcessKeyboard( UP, ( float )deltaTime );
 	if( glfwGetKey( window, GLFW_KEY_E ) == GLFW_PRESS )
 		::g_pTheMouseCamera->ProcessKeyboard( DOWN, ( float )deltaTime );
-}
-
-void switchPhysicsEngine()
-{	
-	nPhysics::iRigidBody* targetBody;
-	nPhysics::iRigidBody* sourceBody;
-
-	for( int index = 0; index != ::g_vecGameObjects.size(); index++ )
-	{
-		cGameObject* pTheGO = ::g_vecGameObjects[index];
-		if( pTheGO->rigidBody == nullptr )
-			continue;
-
-		if( g_bUseBulletPhysics )
-		{
-			targetBody = pTheGO->rigidBody;
-			sourceBody = pTheGO->btRigidBody;
-		}
-		else
-		{
-			targetBody = pTheGO->btRigidBody;
-			sourceBody = pTheGO->rigidBody;			
-		}
-
-		glm::vec3 pos;
-		glm::vec3 vel;
-
-		// Grab data from the 1st engine
-		sourceBody->GetVelocity( vel );
-		sourceBody->GetPosition( pos );
-		
-		// Set it to the engine to be used
-		targetBody->SetVelocity( vel );
-		targetBody->SetPosition( pos );
-
-		glm::vec3 finalpos;
-		glm::vec3 finalvel;
-
-		targetBody->GetVelocity( finalvel );
-		targetBody->GetPosition( finalpos );
-	}
-	
-	return;
 }

@@ -84,7 +84,7 @@ namespace nPhysics
 		void ApplySpringForces();
 		void ApplyForce( glm::vec3 force );
 
-		std::vector<iRigidBody*> getNodeListAsRigidBodies();
+		std::vector<cRigidBody*> getNodeListAsRigidBodies();
 
 	protected:
 		std::vector<cNode*> mNodes;

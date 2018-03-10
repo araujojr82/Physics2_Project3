@@ -9,8 +9,6 @@ bool isAltKeyDown( int mods, bool bByItself = true );
 
 float forceToApply = 0.2f;
 
-extern void switchPhysicsEngine();
-
 bool findNextObject()
 {
 	bool found = false;
@@ -94,8 +92,7 @@ void setSpheresColor()
 
 	if( key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS )
 	{
-		switchPhysicsEngine();
-		::g_bUseBulletPhysics = !::g_bUseBulletPhysics;
+		::g_bDrawClothAsSpheres = !::g_bDrawClothAsSpheres;
 	}
 	
 	const float CAMERASPEED = 0.1f;
@@ -225,10 +222,7 @@ void setSpheresColor()
 			angle = glm::normalize( angle );
 			angle *= ( 0.1f );
 
-			if( g_bUseBulletPhysics )
-				::g_vecGameObjects[::g_selectedSphere]->btRigidBody->ApplyImpulse( angle );
-			else
-				::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
+			::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
 		}
 		break;
 
@@ -242,10 +236,7 @@ void setSpheresColor()
 			angle = glm::normalize( angle );
 			angle *= ( -0.1f );
 
-			if( g_bUseBulletPhysics )
-				::g_vecGameObjects[::g_selectedSphere]->btRigidBody->ApplyImpulse( angle );
-			else
-				::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
+			::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
 		}
 		break;
 
@@ -267,10 +258,7 @@ void setSpheresColor()
 			angle = rotateAngle;
 			angle *= ( 0.1f );
 
-			if( g_bUseBulletPhysics )
-				::g_vecGameObjects[::g_selectedSphere]->btRigidBody->ApplyImpulse( angle );
-			else
-				::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
+			::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
 		}		
 		break;
 
@@ -292,10 +280,7 @@ void setSpheresColor()
 			angle = rotateAngle;
 			angle *= ( 0.1f );
 
-			if( g_bUseBulletPhysics )
-				::g_vecGameObjects[::g_selectedSphere]->btRigidBody->ApplyImpulse( angle );
-			else
-				::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );			
+			::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );			
 		}
 		break;
 
